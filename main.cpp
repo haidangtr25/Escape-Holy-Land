@@ -202,7 +202,8 @@ if (!initAudio(bgMusic, gameOverSound, lightningSound, jumpSound, powerUpSound, 
         if (isPaused) {
             continue;
         }
-
+        if (score > maxScore) maxScore = score;
+        
         Uint32 currentTime = SDL_GetTicks();
         const Uint8* keystates = SDL_GetKeyboardState(nullptr);
 
