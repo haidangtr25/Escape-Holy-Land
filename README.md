@@ -6,7 +6,13 @@ Mã sinh viên: 24020057
 
 **Giới thiệu game:**  
 Escape Holy Land là trò chơi hành động phiêu lưu nơi người chơi điều khiển nhân vật vượt qua các chướng ngài vật thánh để thoát khỏi vùng đất linh thiêng. Game có đồ họa 2D, hệ thống âm thanh đa dạng và nhiều chức năng nâng cao.  
-- Di chuyển bằng WASD để né các chướng ngoại vật hướng tới player.
+- Di chuyển bằng WASD để né các chướng ngoại vật hướng tới player.-Lối chơi, logic của game:
+ Dodging Falling Objects là một trò chơi phản xạ nhanh, nơi người chơi cần né tránh các chướng ngại vật để sống sót càng lâu càng tốt.
+Cách điều khiển:
+Di chuyển trái/phải: Dùng phím “A” (di chuyển sang trái) và “D” (sang phải) để né tránh các vật thể rơi.
+Nhảy: Nhấn phím “W” (Nhảy) để nhảy qua các chướng ngại vật xuất hiện trên mặt đất.
+Nút S: dùng để tiếp đất nhanh hơn khi nhảy/ trên không.
+
   
 **Ngưỡng điểm mục tiêu: 9-10**  
 
