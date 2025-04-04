@@ -4,7 +4,7 @@
 #include <SDL.h>
 #include <SDL_ttf.h>
 #include "audio.h"  // Để sử dụng âm thanh trong menu
-#include "game.h"
+
 
 void renderText(const std::string& text, int x, int y);
 void renderMenu();
