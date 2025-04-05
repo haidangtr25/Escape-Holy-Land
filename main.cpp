@@ -192,7 +192,7 @@ if (!initAudio(bgMusic, gameOverSound, lightningSound, jumpSound, powerUpSound, 
         }
 
         if (showMainMenu || showLevelMenu || showGameOverMenu) {
-            SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+            
             SDL_RenderClear(renderer);
             renderMenu();
             SDL_RenderPresent(renderer);
@@ -352,7 +352,7 @@ if (!initAudio(bgMusic, gameOverSound, lightningSound, jumpSound, powerUpSound, 
         }
 
         // Render everything
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 205);
+        
         SDL_RenderClear(renderer);
         SDL_RenderCopy(renderer, backgroundTexture, nullptr, nullptr);
 
@@ -409,6 +409,7 @@ void resetGame() {
     arrows.clear();
     poolBall = {0, 0, 0.0, 0, false};
     score = 0;
+    roundNumber = 1;
     currentObjectIndex = 0;
     lastObjectSpawnTime = 0;
     spawnFromLeft = true;
