@@ -7,8 +7,6 @@
 #include <iostream>
 
 
-
-// Function declarations
-bool initAudio(Mix_Music*& bgMusic, Mix_Chunk*& gameOverSound, Mix_Chunk*& lightningSound,
-               Mix_Chunk*& jumpSound, Mix_Chunk*& powerUpSound, Mix_Chunk*& whooshSound);
+bool nhac(Mix_Music*& bgm, Mix_Chunk*& sfxGameOver, Mix_Chunk*& sfxZap,
+               Mix_Chunk*& sfxJump, Mix_Chunk*& sfxBoost, Mix_Chunk*& sfxWhoosh);
 #endif // AUDIO_H

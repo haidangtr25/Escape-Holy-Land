@@ -9,47 +9,47 @@
 #include <cmath>
 #include "menu.h"
 #include "objects.h"
-// Global variable.s
 
 TTF_Font* font;
 SDL_Window* window = nullptr;
 SDL_Renderer* renderer = nullptr;
-SDL_Texture* playerTexture = nullptr;
-SDL_Texture* objectTexture = nullptr;
-SDL_Texture* groundObjectTexture = nullptr;
-SDL_Texture* BossTexture = nullptr;
-SDL_Texture* foodTexture = nullptr;
-SDL_Texture* shieldTexture = nullptr;
-SDL_Texture* wingTexture = nullptr;
-SDL_Texture* cloudTexture = nullptr;
-SDL_Texture* lightningTexture = nullptr;
-SDL_Texture* bowerTexture = nullptr;
-SDL_Texture* arrowTexture = nullptr;
-SDL_Texture* backgroundTexture = nullptr;
-SDL_Texture* poolBallTexture = nullptr;
+SDL_Texture* texPlr = nullptr;
+SDL_Texture* dropTex = nullptr;
+SDL_Texture* grounddropTex = nullptr;
+SDL_Texture* texBoss = nullptr;
+SDL_Texture* appleImg = nullptr;
+SDL_Texture* shTex = nullptr;
+SDL_Texture* wingImg = nullptr;
+SDL_Texture* bgCloud = nullptr;
+SDL_Texture* boltTex = nullptr;
+SDL_Texture* bwrTex = nullptr;
+SDL_Texture* texArr = nullptr;
+SDL_Texture* bgTex = nullptr;
+SDL_Texture* ballTex = nullptr;
 SDL_Texture* pauseButtonTexture = nullptr;
 SDL_Texture* pauseButtonHoverTexture = nullptr;
 
-Mix_Music* bgMusic = nullptr;
-Mix_Chunk* gameOverSound = nullptr;
-Mix_Chunk* lightningSound = nullptr;
-Mix_Chunk* jumpSound = nullptr;
-Mix_Chunk* powerUpSound = nullptr;
-Mix_Chunk* whooshSound = nullptr;
-//score related variable
+Mix_Music* bgm = nullptr;
+Mix_Chunk* sfxGameOver = nullptr;
+Mix_Chunk* sfxZap = nullptr;
+Mix_Chunk* sfxJump = nullptr;
+Mix_Chunk* sfxBoost = nullptr;
+Mix_Chunk* sfxWhoosh = nullptr;
+
 int score = 0;
 int maxScore = 0;
 int roundNumber = 1;
-// adding these in order to change speed when level arises
-int POOL_BALL_SPEED;
-int ARROW_SPEED;
 
-// Game state
+int BALL_SPEED;
+int ARROW_SPEED;
+int NUMBER_ARROW;
+
+// khởi tạo objects đầu
 Player player = {SCREEN_WIDTH / 2, SCREEN_HEIGHT - PLAYER_SIZE - GROUND_HEIGHT, 0, false, false, false, false, 0, 0, 0, true};
 std::vector<FallingObject> fallingObjects;
 GroundObject groundObject = {-OBJECT_SIZE, SCREEN_HEIGHT - OBJECT_SIZE - GROUND_HEIGHT, 3, false};
-PowerUp food = {0, 0, 2, false, foodTexture};
-PowerUp shield = {0, 0, 3, false, shieldTexture};
+PowerUp food = {0, 0, 2, false, appleImg};
+PowerUp shield = {0, 0, 3, false, shTex};
 Wing wing = {0, 0, 15, false, 0};
 Cloud cloud = {0, 0, 0, false};
 Lightning lightning = {0, 0, false};
@@ -68,113 +68,85 @@ bool isHoveringPauseButton = false;
 
 
 bool init() {
-    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0) {
-        std::cerr << "SDL could not initialize! SDL_Error: " << SDL_GetError() << std::endl;
-        return false;
-    }
-
-    window = SDL_CreateWindow("Dodge the Falling Objects", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
-    if (!window) {
-        std::cerr << "Window could not be created! SDL_Error: " << SDL_GetError() << std::endl;
-        return false;
-    }
-
-    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-    if (!renderer) {
-        std::cerr << "Renderer could not be created! SDL_Error: " << SDL_GetError() << std::endl;
-        return false;
-    }
-
-    if (TTF_Init() == -1) {
-        std::cerr << "TTF could not initialize! TTF_Error: " << TTF_GetError() << std::endl;
-        return false;
-    }
-
-    font = TTF_OpenFont("arial.ttf", 24);
-    if (!font) {
-        std::cerr << "Failed to load font! TTF_Error: " << TTF_GetError() << std::endl;
-        return false;
-    }
-
+     window = SDL_CreateWindow("Escape Holy Land", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+        renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0) std::cerr << "không thể khởi tạo SDL"  << std::endl;
+    if (!window) std::cerr << "không thể khởi tạo SDL" << std::endl;
+    if (!renderer) std::cerr << "không thể tạo renderer "  << std::endl;
+    if (TTF_Init() == -1) std::cerr << "không thể khởi tạo TTF"  << std::endl;
+       font = TTF_OpenFont("arial.ttf", 24);
+    if (!font)std::cerr << "không thể load font"  << std::endl;
+    if(!font || TTF_Init() == -1 || !window || !renderer || SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0) return false;
     return true;
 }
 
 bool loadTextures() {
-    BossTexture = IMG_LoadTexture(renderer,"imgs/boss.png");
-    playerTexture = IMG_LoadTexture(renderer, "imgs/player.png");
-    objectTexture = IMG_LoadTexture(renderer, "imgs/object.png");
-    groundObjectTexture = IMG_LoadTexture(renderer, "imgs/demon.png");
-    foodTexture = IMG_LoadTexture(renderer, "imgs/apple.png");
-    shieldTexture = IMG_LoadTexture(renderer, "imgs/shield.png");
-    wingTexture = IMG_LoadTexture(renderer, "imgs/wing.png");
-    cloudTexture = IMG_LoadTexture(renderer, "imgs/cloud.png");
-    lightningTexture = IMG_LoadTexture(renderer, "imgs/lightning.png");
-    bowerTexture = IMG_LoadTexture(renderer, "imgs/bower.png");
-    arrowTexture = IMG_LoadTexture(renderer, "imgs/arrow.png");
-    backgroundTexture = IMG_LoadTexture(renderer, "imgs/background.png");
-    poolBallTexture = IMG_LoadTexture(renderer, "imgs/poolball.png");
+    texBoss = IMG_LoadTexture(renderer,"imgs/boss.png");
+    texPlr = IMG_LoadTexture(renderer, "imgs/player.png");
+    dropTex = IMG_LoadTexture(renderer, "imgs/object.png");
+    grounddropTex = IMG_LoadTexture(renderer, "imgs/demon.png");
+    appleImg = IMG_LoadTexture(renderer, "imgs/apple.png");
+    shTex = IMG_LoadTexture(renderer, "imgs/shield.png");
+    wingImg = IMG_LoadTexture(renderer, "imgs/wing.png");
+    bgCloud = IMG_LoadTexture(renderer, "imgs/cloud.png");
+    boltTex = IMG_LoadTexture(renderer, "imgs/lightning.png");
+    bwrTex = IMG_LoadTexture(renderer, "imgs/bower.png");
+    texArr = IMG_LoadTexture(renderer, "imgs/arrow.png");
+    bgTex = IMG_LoadTexture(renderer, "imgs/background.png");
+    ballTex = IMG_LoadTexture(renderer, "imgs/poolball.png");
     pauseButtonTexture = IMG_LoadTexture(renderer, "imgs/pause_button.png");
     pauseButtonHoverTexture = IMG_LoadTexture(renderer, "imgs/pause_button_hover.png");
 
-    if (!playerTexture || !objectTexture || !groundObjectTexture || !foodTexture || !shieldTexture ||
-        !wingTexture || !cloudTexture || !lightningTexture || !bowerTexture || !arrowTexture ||
-        !backgroundTexture || !poolBallTexture || !pauseButtonTexture || !pauseButtonHoverTexture) {
-        std::cerr << "Failed to load textures!" << std::endl;
+    if (!texPlr || !dropTex || !grounddropTex || !appleImg || !shTex ||
+        !wingImg || !bgCloud || !boltTex || !bwrTex || !texArr ||
+        !bgTex || !ballTex || !pauseButtonTexture || !pauseButtonHoverTexture) {
+        std::cerr << "không load đc textures!" << std::endl;
         return false;
     }
     return true;
 }
-
 void close() {
-    SDL_DestroyTexture(BossTexture);
-    SDL_DestroyTexture(playerTexture);
-    SDL_DestroyTexture(objectTexture);
-    SDL_DestroyTexture(groundObjectTexture);
-    SDL_DestroyTexture(foodTexture);
-    SDL_DestroyTexture(shieldTexture);
-    SDL_DestroyTexture(wingTexture);
-    SDL_DestroyTexture(cloudTexture);
-    SDL_DestroyTexture(lightningTexture);
-    SDL_DestroyTexture(bowerTexture);
-    SDL_DestroyTexture(arrowTexture);
-    SDL_DestroyTexture(backgroundTexture);
-    SDL_DestroyTexture(poolBallTexture);
-    SDL_DestroyTexture(pauseButtonTexture);
-    SDL_DestroyTexture(pauseButtonHoverTexture);
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
-    TTF_CloseFont(font);
+    if (texBoss) SDL_DestroyTexture(texBoss);
+    if (texPlr) SDL_DestroyTexture(texPlr);
+    if (dropTex) SDL_DestroyTexture(dropTex);
+    if (grounddropTex) SDL_DestroyTexture(grounddropTex);
+    if (appleImg) SDL_DestroyTexture(appleImg);
+    if (shTex) SDL_DestroyTexture(shTex);
+    if (wingImg) SDL_DestroyTexture(wingImg);
+    if (bgCloud) SDL_DestroyTexture(bgCloud);
+    if (boltTex) SDL_DestroyTexture(boltTex);
+    if (bwrTex) SDL_DestroyTexture(bwrTex);
+    if (texArr) SDL_DestroyTexture(texArr);
+    if (bgTex) SDL_DestroyTexture(bgTex);
+    if (ballTex) SDL_DestroyTexture(ballTex);
+    if (pauseButtonTexture) SDL_DestroyTexture(pauseButtonTexture);
+    if (pauseButtonHoverTexture) SDL_DestroyTexture(pauseButtonHoverTexture);
+
+    if (renderer) SDL_DestroyRenderer(renderer);
+    if (window) SDL_DestroyWindow(window);
+
+    if (font) TTF_CloseFont(font);
     TTF_Quit();
 
-    Mix_FreeMusic(bgMusic);
-    Mix_FreeChunk(gameOverSound);
-    Mix_FreeChunk(lightningSound);
-    Mix_FreeChunk(jumpSound);
-    Mix_FreeChunk(powerUpSound);
-    Mix_FreeChunk(whooshSound);
+    if (bgm) Mix_FreeMusic(bgm);
+    if (sfxGameOver) Mix_FreeChunk(sfxGameOver);
+    if (sfxZap) Mix_FreeChunk(sfxZap);
+    if (sfxJump) Mix_FreeChunk(sfxJump);
+    if (sfxBoost) Mix_FreeChunk(sfxBoost);
+    if (sfxWhoosh) Mix_FreeChunk(sfxWhoosh);
 
     Mix_CloseAudio();
     SDL_Quit();
 }
 
 int main(int argc, char* argv[]) {
-    if (!init()) {
-        std::cerr << "Failed to initialize!" << std::endl;
-        return -1;
-    }
-if (!initAudio(bgMusic, gameOverSound, lightningSound, jumpSound, powerUpSound, whooshSound)) {
-    std::cerr << "Audio initialization failed!" << std::endl;
-    return -1;
-}
-
-    if (!loadTextures()) {
-        std::cerr << "Failed to load textures!" << std::endl;
-        return -1;
-    }
-
+    if (!init()) return -1;
+    if (!nhac(bgm, sfxGameOver, sfxZap, sfxJump, sfxBoost, sfxWhoosh)) return -1;
+    if (!loadTextures())return -1;
+// load score từ file
     loadMaxScore(maxScore);
-    srand(static_cast<unsigned int>(time(0)));
-    Mix_PlayMusic(bgMusic, -1);
+    srand((time(0)));
+    Mix_PlayMusic(bgm, -1);
 
     bool quit = false;
     SDL_Event e;
@@ -184,15 +156,13 @@ if (!initAudio(bgMusic, gameOverSound, lightningSound, jumpSound, powerUpSound, 
             if (e.type == SDL_QUIT) {
                 quit = true;
             } else {
-                // handle mouse clicks over the menu, the start menu and the ending menu
-                handleEvents(e, quit, showMainMenu, showLevelMenu, showGameOverMenu,
+                handleEvents(e, quit, mainMenuOn, levelMenuOn, gameOverMenuOn,
                              isPaused, isHoveringPauseButton, fallingObjectSpeed,
-                             POOL_BALL_SPEED, ARROW_SPEED);
+                             BALL_SPEED, ARROW_SPEED);
             }
         }
 
-        if (showMainMenu || showLevelMenu || showGameOverMenu) {
-            
+        if (mainMenuOn || levelMenuOn || gameOverMenuOn) {
             SDL_RenderClear(renderer);
             renderMenu();
             SDL_RenderPresent(renderer);
@@ -202,13 +172,13 @@ if (!initAudio(bgMusic, gameOverSound, lightningSound, jumpSound, powerUpSound, 
         if (isPaused) {
             continue;
         }
-        if (score > maxScore) maxScore = score;
-        
-        Uint32 currentTime = SDL_GetTicks();
+        if(score > maxScore) maxScore = score;
+
+        Uint32 realtime = SDL_GetTicks();
         const Uint8* keystates = SDL_GetKeyboardState(nullptr);
 
-        // Update all game objects
-        player.update(keystates, currentTime);
+        // update x y
+        player.update(keystates, realtime);
 
         for (auto& obj : fallingObjects) {
             obj.update();
@@ -218,102 +188,91 @@ if (!initAudio(bgMusic, gameOverSound, lightningSound, jumpSound, powerUpSound, 
         food.update();
         shield.update();
         wing.update();
-        cloud.update(currentTime);
-        lightning.update(currentTime);
-        boss.update(currentTime, player.x);
-        bower.update(currentTime, arrows);
+        lightning.update(realtime);
+        boss.update(realtime, player.x);
+        bower.update(realtime, arrows);
 
         for (auto& arrow : arrows) {
             arrow.update();
         }
 
-        poolBall.update(currentTime);
+        poolBall.update(realtime);
+        SpawningLogic(realtime);
 
-        // Spawning logic
-        SpawningLogic(currentTime);
-
-        // Power-up spawning
-        if (currentTime - lastPowerUpSpawnTime >= POWER_UP_INTERVAL) {
-            lastPowerUpSpawnTime = currentTime;
+        // spawn powerup
+        if (realtime - lastPowerUpSpawnTime >= POWER_UP_INTERVAL) {
+            lastPowerUpSpawnTime = realtime;
             if (!food.active && !shield.active && !wing.active) {
-                switch (rand() % 3) {
-                    case 0:
-                        food.spawn(SCREEN_WIDTH);
-                        break;
-                    case 1:
-                        shield.spawn(SCREEN_WIDTH);
-                        break;
-                    case 2:
-                        wing.spawn(SCREEN_WIDTH, currentTime);
-                        break;
-                }
+                int RNG = rand() % 3;
+                if (RNG == 0) food.spawn(SCREEN_WIDTH);
+                else if (RNG == 1)     shield.spawn(SCREEN_WIDTH);
+                else wing.spawn(SCREEN_WIDTH, realtime);
             }
         }
 
-        // Pool ball spawning
+        // spawn bóng
         if (score % 200 == 0 && score != 0 && !poolBall.active) {
-            poolBall.spawn(SCREEN_WIDTH, SCREEN_HEIGHT, currentTime);
+            poolBall.spawn(SCREEN_WIDTH, SCREEN_HEIGHT, realtime);
         }
 
-        // Cloud spawning
+        // spawn mây
         if (score % 100 == 0 && score != 0 && !cloud.active && !lightning.active) {
-            cloud.spawn(SCREEN_WIDTH, currentTime);
+            cloud.spawn(SCREEN_WIDTH, realtime);
         }
 
         if (cloud.active) {
-            if (currentTime - cloud.spawnTime >= CLOUD_WARNING_DURATION) {
-                // Cloud disappears, lightning appears
+            if (realtime - cloud.spawnTime >= CLOUD_DURATION) {
                 cloud.active = false;
-                lightning.x = cloud.x + OBJECT_SIZE / 2; // Center lightning under cloud
-                lightning.spawnTime = currentTime;
+                lightning.x = cloud.x + OBJECT_SIZE / 2;
+                lightning.spawnTime = realtime;
                 lightning.active = true;
-                Mix_PlayChannel(-1, lightningSound, 0);
+                Mix_PlayChannel(-1, sfxZap, 0);
             }
         }
 
         if (lightning.active) {
-            if (currentTime - lightning.spawnTime >= LIGHTNING_DURATION) {
+            if (realtime - lightning.spawnTime >= LIGHTNING_DURATION) {
                 lightning.active = false;
             }
         }
 
-        // Boss spawning
+        // spawn boss
         if (score % 250 == 0 && score != 0 && !boss.active) {
-            boss.spawn(SCREEN_WIDTH, currentTime);
+            boss.spawn(SCREEN_WIDTH, realtime);
         }
 
-        // Bower spawning
+        // spawn cung thủ
         if (score % 300 == 0 && score != 0 && !bower.active) {
-            bower.spawn(SCREEN_WIDTH, currentTime);
+            bower.spawn(SCREEN_WIDTH, realtime);
         }
 
-        // Ground object spawning
+        // spawn quỷ g
         if (!groundObject.active && score % 400 == 0) {
             groundObject.spawn(spawnFromLeft, SCREEN_WIDTH, SCREEN_HEIGHT);
             spawnFromLeft = !spawnFromLeft;
         }
 
-        // Check power-up collisions
+        // buff tăng lực
         if (food.active && player.checkCollisionWith(food)) {
             food.active = false;
             player.speedBoostActive = true;
-            player.speedBoostEndTime = currentTime + SPEED_BOOST_DURATION;
-            Mix_PlayChannel(-1, powerUpSound, 0);
+            player.speedBoostEndTime = realtime + APPLE_DURATION;
+            Mix_PlayChannel(-1, sfxBoost, 0);
         }
         if (shield.active && player.checkCollisionWith(shield)) {
             shield.active = false;
-            player.immortalEndTime = currentTime + IMMORTAL_DURATION;
+            player.immortalEndTime = realtime + IMMORTAL_DURATION;
             player.isImmortal = true;
-            Mix_PlayChannel(-1, powerUpSound, 0);
+            Mix_PlayChannel(-1, sfxBoost, 0);
         }
         if (wing.active && player.checkCollisionWith(wing)) {
             wing.active = false;
             player.wingActive = true;
-            player.wingEndTime = currentTime + WING_DURATION;
-            Mix_PlayChannel(-1, powerUpSound, 0);
+            player.wingEndTime = realtime + WING_DURATION;
+            Mix_PlayChannel(-1, sfxBoost, 0);
         }
 
-        // Check for game over conditions
+        //va chạm
         bool gameOver = false;
         if (!player.isImmortal) {
             for (const auto& obj : fallingObjects) {
@@ -347,14 +306,14 @@ if (!initAudio(bgMusic, gameOverSound, lightningSound, jumpSound, powerUpSound, 
         if (gameOver) {
             saveMaxScore(maxScore);
             Mix_HaltMusic();
-            Mix_PlayChannel(-1, gameOverSound, 0);
-            showGameOverMenu = true;
+            Mix_PlayChannel(-1, sfxGameOver, 0);
+            gameOverMenuOn = true;
         }
 
-        // Render everything
-        
+        // Render
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 205);
         SDL_RenderClear(renderer);
-        SDL_RenderCopy(renderer, backgroundTexture, nullptr, nullptr);
+        SDL_RenderCopy(renderer, bgTex, nullptr, nullptr);
 
         player.render();
 
@@ -377,13 +336,13 @@ if (!initAudio(bgMusic, gameOverSound, lightningSound, jumpSound, powerUpSound, 
 
         poolBall.render();
 
-        renderText("Score: " + std::to_string(score), SCREEN_WIDTH - 200, 10);
-        renderText("Max Score: " + std::to_string(maxScore), SCREEN_WIDTH - 200, 40);
-        renderText("Round: " + std::to_string(roundNumber), SCREEN_WIDTH - 200, 70);
+        renderChat("Score: " + std::to_string(score), SCREEN_WIDTH - 200, 10);
+        renderChat("Max Score: " + std::to_string(maxScore), SCREEN_WIDTH - 200, 40);
+        renderChat("Round: " + std::to_string(roundNumber), SCREEN_WIDTH - 200, 70);
 
         renderPowerUpStatus();
-        renderPauseButton(renderer,pauseButtonTexture,
-                       pauseButtonHoverTexture,isHoveringPauseButton, PAUSE_BUTTON_SIZE, SCREEN_WIDTH);
+        renderPauseBtn(renderer,pauseButtonTexture,
+                       pauseButtonHoverTexture,isHoveringPauseButton, PAUSE_SIZE, SCREEN_WIDTH);
 
         SDL_RenderPresent(renderer);
         SDL_Delay(16);
@@ -399,8 +358,8 @@ void resetGame() {
     fallingObjects.clear();
     fallingObjects.push_back({rand() % (SCREEN_WIDTH - OBJECT_SIZE), 0, fallingObjectSpeed, false});
     groundObject = {-OBJECT_SIZE, SCREEN_HEIGHT - OBJECT_SIZE - GROUND_HEIGHT, 3, false};
-    food = {0, 0, 2, false, foodTexture};
-    shield = {0, 0, 3, false, shieldTexture};
+    food = {0, 0, 2, false, appleImg};
+    shield = {0, 0, 3, false, shTex};
     wing = {0, 0, 15, false, 0};
     cloud = {0, 0, 0, false};
     lightning = {0, 0, false};
@@ -413,59 +372,63 @@ void resetGame() {
     currentObjectIndex = 0;
     lastObjectSpawnTime = 0;
     spawnFromLeft = true;
-    showGameOverMenu = false;
+    gameOverMenuOn = false;
     isPaused = false;
     if (!Mix_PlayingMusic()) {
-        Mix_PlayMusic(bgMusic, -1);
+        Mix_PlayMusic(bgm, -1);
     }
 }
 
-void handleEvents(SDL_Event& e, bool& quit, bool& showMainMenu, bool& showLevelMenu,
-                 bool& showGameOverMenu, bool& isPaused, bool isHoveringPauseButton,
-                 int& fallingObjectSpeed, int& POOL_BALL_SPEED, int& ARROW_SPEED) {
+void handleEvents(SDL_Event& e, bool& quit, bool& mainMenuOn, bool& levelMenuOn,
+                 bool& gameOverMenuOn, bool& isPaused, bool isHoveringPauseButton,
+                 int& fallingObjectSpeed, int& BALL_SPEED, int& ARROW_SPEED) {
     if (e.type == SDL_MOUSEBUTTONDOWN) {
         int mouseX, mouseY;
         SDL_GetMouseState(&mouseX, &mouseY);
 
-        if (showMainMenu) {
+        if (mainMenuOn) {
             if (mouseX >= SCREEN_WIDTH / 2 - 50 && mouseX <= SCREEN_WIDTH / 2 + 50) {
                 if (mouseY >= SCREEN_HEIGHT / 2 - 50 && mouseY <= SCREEN_HEIGHT / 2 - 10) {
-                    showMainMenu = false;
-                    showLevelMenu = true;
+                    mainMenuOn = false;
+                    levelMenuOn = true;
                 }
                 else if (mouseY >= SCREEN_HEIGHT / 2 && mouseY <= SCREEN_HEIGHT / 2 + 40) {
                     quit = true;
                 }
             }
         }
-        else if (showLevelMenu) {
+        else if (levelMenuOn) {
             if (mouseX >= SCREEN_WIDTH / 2 - 50 && mouseX <= SCREEN_WIDTH / 2 + 50) {
                 if (mouseY >= SCREEN_HEIGHT / 2 - 150 && mouseY <= SCREEN_HEIGHT / 2 - 110) {
                     fallingObjectSpeed = 5;
-                    POOL_BALL_SPEED = 7;
+                    BALL_SPEED = 7;
                     ARROW_SPEED = 3;
-                    showLevelMenu = false;
+                    NUMBER_ARROW = 4;
+                    levelMenuOn = false;
                     resetGame();
                 }
                 else if (mouseY >= SCREEN_HEIGHT / 2 - 100 && mouseY <= SCREEN_HEIGHT / 2 - 60) {
                     fallingObjectSpeed = 7;
-                    POOL_BALL_SPEED = 10;
+                    BALL_SPEED = 10;
                     ARROW_SPEED = 4;
-                    showLevelMenu = false;
+                    NUMBER_ARROW = 5;
+                    levelMenuOn = false;
                     resetGame();
                 }
                 else if (mouseY >= SCREEN_HEIGHT / 2 - 50 && mouseY <= SCREEN_HEIGHT / 2 - 10) {
                     fallingObjectSpeed = 10;
-                    POOL_BALL_SPEED = 13;
-                    ARROW_SPEED = 5;
-                    showLevelMenu = false;
+                    BALL_SPEED = 13;
+                    ARROW_SPEED = 6;
+                    NUMBER_ARROW = 6;
+                    levelMenuOn = false;
                     resetGame();
                 }
                 else if (mouseY >= SCREEN_HEIGHT / 2 && mouseY <= SCREEN_HEIGHT / 2 + 40) {
                     fallingObjectSpeed = 16;
-                    POOL_BALL_SPEED = 16;
-                    ARROW_SPEED = 6;
-                    showLevelMenu = false;
+                    BALL_SPEED = 16;
+                    ARROW_SPEED = 9;
+                    NUMBER_ARROW = 8;
+                    levelMenuOn = false;
                     resetGame();
                 }
                 else if (mouseY >= SCREEN_HEIGHT / 2 + 50 && mouseY <= SCREEN_HEIGHT / 2 + 90) {
@@ -473,14 +436,14 @@ void handleEvents(SDL_Event& e, bool& quit, bool& showMainMenu, bool& showLevelM
                 }
             }
         }
-        else if (showGameOverMenu) {
+        else if (gameOverMenuOn) {
             if (mouseX >= SCREEN_WIDTH / 2 - 50 && mouseX <= SCREEN_WIDTH / 2 + 50) {
                 if (mouseY >= SCREEN_HEIGHT / 2 - 50 && mouseY <= SCREEN_HEIGHT / 2 - 10) {
-                    showGameOverMenu = false;
-                    showLevelMenu = true;
+                    gameOverMenuOn = false;
+                    levelMenuOn = true;
                     resetGame();
                     Mix_HaltMusic();
-                    Mix_PlayMusic(bgMusic, -1);
+                    Mix_PlayMusic(bgm, -1);
                 }
                 else if (mouseY >= SCREEN_HEIGHT / 2 && mouseY <= SCREEN_HEIGHT / 2 + 40) {
                     quit = true;
@@ -488,7 +451,7 @@ void handleEvents(SDL_Event& e, bool& quit, bool& showMainMenu, bool& showLevelM
             }
         }
 
-        if (!showMainMenu && !showLevelMenu && !showGameOverMenu && isHoveringPauseButton) {
+        if (!mainMenuOn && !levelMenuOn && !gameOverMenuOn && isHoveringPauseButton) {
             isPaused = !isPaused;
             if (isPaused) {
                 Mix_PauseMusic();
@@ -498,7 +461,7 @@ void handleEvents(SDL_Event& e, bool& quit, bool& showMainMenu, bool& showLevelM
         }
     }
     else if (e.type == SDL_KEYDOWN) {
-        if (e.key.keysym.sym == SDLK_ESCAPE && !showMainMenu && !showLevelMenu && !showGameOverMenu) {
+        if (e.key.keysym.sym == SDLK_ESCAPE && !mainMenuOn && !levelMenuOn && !gameOverMenuOn) {
             isPaused = !isPaused;
             if (isPaused) {
                 Mix_PauseMusic();

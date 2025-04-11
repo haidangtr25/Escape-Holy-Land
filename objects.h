@@ -6,7 +6,6 @@
 #include <cstdlib>
 bool checkCollision(int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2);
 
-// Struct declarations
 struct FallingObject {
     int x, y, speed;
     bool active;
@@ -46,7 +45,6 @@ struct Cloud {
     int x, y;
     Uint32 spawnTime;
     bool active;
-    void update(Uint32 currentTime);
     void spawn(int screenWidth, Uint32 currentTime);
     void render() const;
 };
@@ -112,7 +110,8 @@ struct Player {
     bool checkCollisionWith(const Arrow& obj) const;
 };
 extern Player player;
-// Global functions
+
+
 void renderPowerUpStatus();
 void SpawningLogic(const Uint32 &currentTime);
 
