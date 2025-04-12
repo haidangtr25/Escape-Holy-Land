@@ -60,6 +60,6 @@ Nút S: dùng để tiếp đất nhanh hơn khi nhảy/ trên không.
   - Hỗ trợ AI (ChatGPT / Grok) tạo hình ảnh pixel  
 
 **Sử dụng AI hỗ trợ:**  
-- ChatGPT: Hỗ trợ debug code, gợi ý giải pháp kỹ thuật.  
+- DeepSeek: Hỗ trợ debug code, gợi ý giải pháp kỹ thuật.  
 - GitHub Copilot: Hỗ trợ auto-complete code.  
 - Mức độ sử dụng: Khoảng 50% code có sự hỗ trợ từ AI.  
