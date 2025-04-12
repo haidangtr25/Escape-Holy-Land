@@ -62,4 +62,4 @@ Nút S: dùng để tiếp đất nhanh hơn khi nhảy/ trên không.
 **Sử dụng AI hỗ trợ:**  
 - ChatGPT: Hỗ trợ debug code, gợi ý giải pháp kỹ thuật.  
 - GitHub Copilot: Hỗ trợ auto-complete code.  
-- Mức độ sử dụng: Khoảng 40% code có sự hỗ trợ từ AI.  
+- Mức độ sử dụng: Khoảng 50% code có sự hỗ trợ từ AI.  
